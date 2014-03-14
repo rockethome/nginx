@@ -21,7 +21,7 @@ if [ $OSTYPE == "darwin13" ]; then
 elif [ $OSTYPE == "linux-gnu" ]; then
     
     # Check if zeromq is installed
-    if [[ -n $(ldconfig -p |grep zmq.so.3)]]; then
+    if [[ -n $(ldconfig -p |grep zmq.so.3) ]]; then
         yum remove zeromq zeromq-devel
         wget http://download.zeromq.org/zeromq-3.2.2.tar.gz
         tar zxvf zeromq-3.2.2.tar.gz && cd zeromq-3.2.2
