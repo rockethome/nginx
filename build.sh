@@ -38,6 +38,7 @@ fi
 
 # Enter into nginx source dir
 cd src/
+patch -p1 < ../patches/001_nginx_ver.patch
 ./configure \
     --sbin-path=/usr/sbin/nginx
     --conf-path=/etc/nginx/nginx.conf \

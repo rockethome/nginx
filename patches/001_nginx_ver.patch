@@ -1,0 +1,61 @@
+diff --git a/src/core/nginx.h b/src/core/nginx.h
+index 8ab0e88..cf4e301 100644
+--- a/src/core/nginx.h
++++ b/src/core/nginx.h
+@@ -2,18 +2,21 @@
+ /*
+  * Copyright (C) Igor Sysoev
+  * Copyright (C) Nginx, Inc.
++ * Modified by Rocketho.me
+  */
+ 
+ 
+ #ifndef _NGINX_H_INCLUDED_
+ #define _NGINX_H_INCLUDED_
+ 
++/*
++ * Rocketbox ver is nginx main + 0.0.3
++ */
++#define nginx_version      2000014
++#define NGINX_VERSION      "2.0.14"
++#define NGINX_VER          "rocketbox/" NGINX_VERSION
+ 
+-#define nginx_version      1005011
+-#define NGINX_VERSION      "1.5.11"
+-#define NGINX_VER          "nginx/" NGINX_VERSION
+-
+-#define NGINX_VAR          "NGINX"
++#define NGINX_VAR          "ROCKETBOX"
+ #define NGX_OLDPID_EXT     ".oldbin"
+ 
+ 
+diff --git a/src/http/ngx_http_header_filter_module.c b/src/http/ngx_http_header_filter_module.c
+index 507dc93..5b7ff5e 100644
+--- a/src/http/ngx_http_header_filter_module.c
++++ b/src/http/ngx_http_header_filter_module.c
+@@ -46,7 +46,7 @@ ngx_module_t  ngx_http_header_filter_module = {
+ };
+ 
+ 
+-static char ngx_http_server_string[] = "Server: nginx" CRLF;
++static char ngx_http_server_string[] = "Server: rocketbox" CRLF;
+ static char ngx_http_server_full_string[] = "Server: " NGINX_VER CRLF;
+ 
+ 
+@@ -96,14 +96,14 @@ static ngx_str_t ngx_http_status_lines[] = {
+     ngx_string("415 Unsupported Media Type"),
+     ngx_string("416 Requested Range Not Satisfiable"),
+ 
+-    /* ngx_null_string, */  /* "417 Expectation Failed" */
++    ngx_string("417 Request Not Manmade"), /* Custom */
+     /* ngx_null_string, */  /* "418 unused" */
+     /* ngx_null_string, */  /* "419 unused" */
+     /* ngx_null_string, */  /* "420 unused" */
+     /* ngx_null_string, */  /* "421 unused" */
+     /* ngx_null_string, */  /* "422 Unprocessable Entity" */
+     /* ngx_null_string, */  /* "423 Locked" */
+-    /* ngx_null_string, */  /* "424 Failed Dependency" */
++    ngx_string("424 You Did Something Stupid"), /* Custom */
+ 
+ #define NGX_HTTP_LAST_4XX  417
+ #define NGX_HTTP_OFF_5XX   (NGX_HTTP_LAST_4XX - 400 + NGX_HTTP_OFF_4XX)
