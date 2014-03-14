@@ -1,6 +1,9 @@
 #!/bin/sh
 BASE=$(pwd)
 
+# pull submodules
+git submodule update --recursive
+
 # Mac OS X check
 if [ $OSTYPE == "darwin13" ]; then
     #statements
@@ -30,3 +33,16 @@ cd src/
 
 make
 sudo make install
+
+
+git filter-branch --commit-filter '
+        if [ "$GIT_COMMITTER_NAME" = "Mike Mackintosh" ];
+        then
+                GIT_COMMITTER_NAME="Mike Mackintosh";
+                GIT_AUTHOR_NAME="Mike Mackintosh";
+                GIT_COMMITTER_EMAIL="m@rocketho.me";
+                GIT_AUTHOR_EMAIL="m@rocketho.me";
+                git commit-tree "$@";
+        else
+                git commit-tree "$@";
+        fi' HEAD
