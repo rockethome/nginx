@@ -1,8 +1,16 @@
 #!/bin/sh
 BASE=$(pwd)
 
+
 # pull submodules
+git submodule init
 git submodule update --recursive
+
+
+# Get UTHASH for Smockron
+git submodule init ${BASE}/pkgs/smockron
+git submodule update --recursive ${BASE}/pkgs/smockron
+
 
 # Mac OS X check
 if [ $OSTYPE == "darwin13" ]; then
@@ -10,8 +18,12 @@ if [ $OSTYPE == "darwin13" ]; then
     export FLAGS="--with-cc-opt='-Wno-deprecated-declarations'"
 fi
 
+# Install required packages
+yum install pcre-devel openssl-devel zeromq-devel
+
 cd src/
 ./configure \
+    --
     --conf-path=/etc/nginx/nginx.conf \
     --error-log-path=/var/log/nginx/error.log \
     --http-log-path=/var/log/nginx/access.log \
