@@ -14,25 +14,29 @@ git submodule update --recursive ${BASE}/pkgs/smockron
 
 # Mac OS X check
 if [ $OSTYPE == "darwin13" ]; then
-    #statements
+    
+    # Fix deprecated md5 features
     export FLAGS="--with-cc-opt='-Wno-deprecated-declarations'"
+
+elif [ $OSTYPE == "linux-gnu" ]; then
+    
+    # Check if zeromq is installed
+    if [[ -n $(ldconfig -p |grep zmq.so.3)]]; then
+        yum remove zeromq zeromq-devel
+        wget http://download.zeromq.org/zeromq-3.2.2.tar.gz
+        tar zxvf zeromq-3.2.2.tar.gz && cd zeromq-3.2.2
+        ./configure
+        make && make install
+        cd ..
+        rm -rf zeromq*
+    fi
+
+    # Install required packages
+    yum install pcre-devel openssl-devel
+
 fi
 
-# Check if zeromq is installed
-if [[ -n $(ldconfig -p |grep zmq.so.3)]]; then
-    yum remove zeromq zeromq-devel
-    wget http://download.zeromq.org/zeromq-3.2.2.tar.gz
-    tar zxvf zeromq-3.2.2.tar.gz && cd zeromq-3.2.2
-    ./configure
-    make && make install
-    cd ..
-    rm -rf zeromq*
-fi
-
-# Install required packages
-yum install pcre-devel openssl-devel
-
-
+# Enter into nginx source dir
 cd src/
 ./configure \
     --sbin-path=/usr/sbin/nginx
@@ -55,5 +59,6 @@ cd src/
     --add-module=${BASE}/pkgs/requestid/ \
     ${FLAGS}
 
-make
-sudo make install
+
+# Build and install
+make && sudo make install
