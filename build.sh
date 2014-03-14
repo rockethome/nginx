@@ -18,12 +18,24 @@ if [ $OSTYPE == "darwin13" ]; then
     export FLAGS="--with-cc-opt='-Wno-deprecated-declarations'"
 fi
 
+# Check if zeromq is installed
+if [[ -n $(ldconfig -p |grep zmq.so.3)]]; then
+    yum remove zeromq zeromq-devel
+    wget http://download.zeromq.org/zeromq-3.2.2.tar.gz
+    tar zxvf zeromq-3.2.2.tar.gz && cd zeromq-3.2.2
+    ./configure
+    make && make install
+    cd ..
+    rm -rf zeromq*
+fi
+
 # Install required packages
-yum install pcre-devel openssl-devel zeromq-devel
+yum install pcre-devel openssl-devel
+
 
 cd src/
 ./configure \
-    --
+    --sbin-path=/usr/sbin/nginx
     --conf-path=/etc/nginx/nginx.conf \
     --error-log-path=/var/log/nginx/error.log \
     --http-log-path=/var/log/nginx/access.log \
@@ -45,16 +57,3 @@ cd src/
 
 make
 sudo make install
-
-
-git filter-branch --commit-filter '
-        if [ "$GIT_COMMITTER_NAME" = "Mike Mackintosh" ];
-        then
-                GIT_COMMITTER_NAME="Mike Mackintosh";
-                GIT_AUTHOR_NAME="Mike Mackintosh";
-                GIT_COMMITTER_EMAIL="m@rocketho.me";
-                GIT_AUTHOR_EMAIL="m@rocketho.me";
-                git commit-tree "$@";
-        else
-                git commit-tree "$@";
-        fi' HEAD
