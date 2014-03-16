@@ -5,8 +5,8 @@ BASE=$(pwd)
 # Flush log
 echo "" > build.log
 
-
 # pull submodules
+echo "!!! Checking out submodules"
 git submodule init  >> build.log 2>&1
 git submodule update --recursive  >> build.log 2>&1
 
@@ -15,7 +15,7 @@ git submodule update --recursive  >> build.log 2>&1
 git submodule init ${BASE}/pkgs/smockron  >> build.log 2>&1
 git submodule update --recursive ${BASE}/pkgs/smockron  >> build.log 2>&1
 
-
+echo "!!! Probing environment"
 # Mac OS X check
 if [ $OSTYPE == "darwin13" ]; then
 
@@ -50,9 +50,8 @@ cd src/
 echo "Patching Rocketbox..."
 patch -p1 -s < ../patches/001_nginx_ver.patch >> build.log
 
-echo "Configuring Rocketbox..."
-
 # Configure
+echo "Configuring Rocketbox..."
 ./configure \
     --sbin-path=/usr/sbin/nginx \
     --conf-path=/etc/nginx/nginx.conf \
