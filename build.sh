@@ -2,21 +2,25 @@
 BASE=$(pwd)
 
 
+# Install WGET
+sudo yum install wget
+
+
 # Flush log
 echo "" > build.log
 
+
 # pull submodules
 echo "!!! Checking out submodules"
-git submodule init  >> build.log 2>&1
-git submodule update --recursive  >> build.log 2>&1
+git submodule update --init --recursive  >> build.log 2>&1
 
 
 # Get UTHASH for Smockron
-git submodule init ${BASE}/pkgs/smockron  >> build.log 2>&1
-git submodule update --recursive ${BASE}/pkgs/smockron  >> build.log 2>&1
+git submodule update --init --recursive ${BASE}/pkgs/smockron  >> build.log 2>&1
 
-echo "!!! Probing environment"
+
 # Mac OS X check
+echo "!!! Probing environment"
 if [ $OSTYPE == "darwin13" ]; then
 
     echo "!!! Building for OS X"
@@ -32,13 +36,15 @@ elif [ $OSTYPE == "linux-gnu" ]; then
         wget http://download.zeromq.org/zeromq-3.2.2.tar.gz  >> build.log 2>&1
         tar zxvf zeromq-3.2.2.tar.gz  >> build.log 2>&1 && cd zeromq-3.2.2  >> build.log 2>&1
         ./configure  >> build.log 2>&1
-        make  >> build.log 2>&1 && make install >> build.log 2>&1
+        make  >> build.log 2>&1 && sudo make install >> build.log 2>&1
+	    echo /usr/local/lib | tee -a /etc/ld.so.conf.d/local.conf
+	    sudo ldconfig
         cd ..
         rm -rf zeromq*
     fi
 
     # Install required packages
-    yum install pcre-devel openssl-devel
+    sudo yum install pcre-devel openssl-devel
 
 fi
 
@@ -46,9 +52,11 @@ fi
 # Enter into nginx source dir
 cd src/
 
+
 # Apply NGINX Patch
 echo "Patching Rocketbox..."
 patch -p1 -s < ../patches/001_nginx_ver.patch >> build.log
+
 
 # Configure
 echo "Configuring Rocketbox..."
@@ -77,6 +85,7 @@ echo "Configuring Rocketbox..."
 # Build and install
 echo "Building Rocketbox..." 
 make >> build.log 2>&1 && echo "Installing Rocketbox..." && sudo make install >> build.log 2>&1
+
 
 # Test
 NGINX_TEST=$(sudo /usr/sbin/nginx -t >> build.log 2>&1)
