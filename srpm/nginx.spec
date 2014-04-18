@@ -45,7 +45,7 @@ Requires(pre): pwdutils
 Summary: High performance web server
 Name: nginx
 Version: 1.4.7
-Release: 2%{?dist}.ngx
+Release: 3%{?dist}.ngx
 Vendor: nginx inc.
 URL: http://nginx.org/
 
@@ -68,7 +68,8 @@ License: 2-clause BSD-like license
 BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root
 BuildRequires: zlib-devel
 BuildRequires: pcre-devel
-#BuildRequires: apache2-prefork-dev
+BuildRequires: libxml2-devel
+BuildRequires: curl-devel
 
 Provides: webserver
 
@@ -85,14 +86,15 @@ Not stripped version of nginx built with the debugging log support.
 
 %prep
 %setup -q
-#%{__tar} zxvf %{SOURCE100}
-#%setup -T -D -a 100
-#./configure --enable-standalone-module
-#make
+%{__tar} zxf %{SOURCE100}
+%setup -T -D -a 100
+cd modsecurity-2.8.0
+./configure --enable-standalone-module
+make
 #make install
-%{__tar} zxvf %{SOURCE101}
+%{__tar} zxf %{SOURCE101}
 %setup -T -D -a 101
-%{__tar} zxvf %{SOURCE102}
+%{__tar} zxf %{SOURCE102}
 %setup -T -D -a 102
 
 %build
@@ -129,6 +131,7 @@ Not stripped version of nginx built with the debugging log support.
         --with-ipv6 \
         --with-debug \
         --with-cc-opt="%{optflags} $(pcre-config --cflags)" \
+        --add-module=%{_builddir}/%{name}-%{version}/modsecurity-2.8.0/nginx/modsecurity \
         --add-module=%{_builddir}/%{name}-%{version}/headers-more-nginx-module-0.25 \
         --add-module=%{_builddir}/%{name}-%{version}/requestid \
        $*
@@ -167,6 +170,7 @@ make %{?_smp_mflags}
         --with-file-aio \
         --with-ipv6 \
         --with-cc-opt="%{optflags} $(pcre-config --cflags)" \
+        --add-module=%{_builddir}/%{name}-%{version}/modsecurity-2.8.0/nginx/modsecurity \
         --add-module=%{_builddir}/%{name}-%{version}/headers-more-nginx-module-0.25 \
         --add-module=%{_builddir}/%{name}-%{version}/requestid \
         $*
